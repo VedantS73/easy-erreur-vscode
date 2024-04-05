@@ -10,6 +10,7 @@ const axios = require('axios');
  * @param {vscode.ExtensionContext} context
  */
 async function activate(context) {
+	// 
 	// const res = await axios.get("")
 	// console.group(res.data)
 
@@ -26,18 +27,39 @@ async function activate(context) {
 	// 	vscode.window.showInformationMessage(`Selected Text: ${selectedText}`);
 	// });
 
-	let disposable = vscode.commands.registerCommand('Easy-Erreur.saveCodeSnippet', function () {
-
+	let disposable = vscode.commands.registerCommand('Easy-Erreur.saveCodeSnippet', async function () {
+		vscode.window.showInformationMessage('Saving Snippet @Easy-Erreur ...');
 		const editor = vscode.window.activeTextEditor;
-        if (!editor) {
+        const selectedText = editor.document.getText(editor.selection);
+
+		if (!editor) {
             vscode.window.showInformationMessage('No text selected');
             return;
         }
 
-        const selectedText = editor.document.getText(editor.selection);
+		const snippetTitle = await vscode.window.showInputBox({
+            prompt: 'Enter a title for the snippet',
+			timeout: 10000
+        });
 
-		vscode.window.showInformationMessage('Hello World from hello!');
-		vscode.window.showInformationMessage(`Selected Text: ${selectedText}`);
+		if (snippetTitle !== undefined) {
+            // Do something with the selected text and snippet title
+            vscode.window.showInformationMessage(`Title: ${snippetTitle}, Selected Text: ${selectedText}`);
+        } else {
+			vscode.window.showInformationMessage('Operation cancelled or timed out.');
+		}
+
+		const tagsInput = await vscode.window.showInputBox({
+            prompt: 'Enter tags separated by commas (,) (optional)',
+            placeHolder: 'e.g., tag1, tag2, tag3'
+        });
+
+		let tags = [];
+        if (tagsInput !== undefined) {
+            tags = tagsInput.split(',').map(tag => tag.trim());
+        }
+
+		vscode.window.showInformationMessage(`Title: ${snippetTitle}, Selected Text: ${selectedText}, Tags: ${tags.join(', ')}`);
 	});
 
 	context.subscriptions.push(disposable);
