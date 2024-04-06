@@ -30,19 +30,9 @@
         "category": "easy-erreur"
       },
       {
-        "command": "Easy-Erreur.pushSnippet_EzzErreur",
+        "command": "Easy-Erreur.pushSnippet",
         "title": "Push Snippet to Ezz Erreur",
-        "category": "easy-erreur",
-        "args": [
-          {
-            "label": "python",
-            "description": "You can use this for adding a blue button which turns black on hover",
-            "tags": [
-            "python"
-            ],
-            "codeSnipet": "def greet():\r\n    name = input(\"Enter your name: \")\r\n    print(\"Hello, {}! Welcome to the Python script.\".format(name))"
-          }
-        ]
+        "category": "easy-erreur"
       }
     ],
     "menus": {

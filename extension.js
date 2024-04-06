@@ -119,11 +119,22 @@ async function activate(context) {
             vscode.window.showInformationMessage('No text selected');
             return;
         }
+		
+		const fileName = editor.document.fileName;
+		const fileExtension = fileName.split('.').pop();
 
 		const snippetTitle = await vscode.window.showInputBox({
             prompt: 'Enter a title for the snippet',
 			timeout: 10000
         });
+
+		let snippetDescription = await vscode.window.showInputBox({
+			prompt: 'Enter a description for the snippet (optional)'
+		});
+
+		if (snippetDescription === undefined) {
+			snippetDescription = '';
+		}
 
 		if (snippetTitle !== undefined) {
             // Do something with the selected text and snippet title
@@ -143,11 +154,11 @@ async function activate(context) {
         }
 
 		if (snippetTitle !== undefined && selectedText !== undefined) {
-			vscode.window.showInformationMessage(`Title: ${snippetTitle}, Selected Text: ${selectedText}, Tags: ${tags.join(', ')}`);
+			vscode.window.showInformationMessage(`Snippet ${snippetTitle}, Saved Successfully!`);
 
 			const dbFilePath = path.join(__dirname, 'db.json');
 			const data = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
-			data.push({ label: snippetTitle, tags: tags, code: selectedText});
+			data.push({ label: snippetTitle, description: snippetDescription, extension: fileExtension ,tags: tags, code: selectedText, cloud: 0});
 			fs.writeFileSync(dbFilePath, JSON.stringify(data, null, 2));
 
 			// Refresh the tree view
@@ -197,32 +208,52 @@ async function activate(context) {
 		  }
 	});
 
-	let postcode_disposable = vscode.commands.registerCommand('Easy-Erreur.pushSnippet_EzzErreur', async (node) => {
+	let postcode_disposable = vscode.commands.registerCommand('Easy-Erreur.pushSnippet', async () => {
 		// Retrieve the stored token from the VSCode Keychain API
 		console.log("Pusing Snippet to Ezz-Erreur ...")
 		const token = context.globalState.get('authToken');
 
-		// let node = {
-		// 	"label": "python",
-		// 	"description": "You can use this for adding a blue button which turns black on hover",
-		// 	"tags": [
-		// 	"python"
-		// 	],
-		// 	"codeSnipet": "def greet():\r\n    name = input(\"Enter your name: \")\r\n    print(\"Hello, {}! Welcome to the Python script.\".format(name))"
-		// }
-	
-		if (token) {
-		  try {
-			const response = await axios.post('https://ezzerreur-hackbyte.onrender.com/codes/postCode',node, {
-			  headers: { 'Authorization': `Bearer ${token}` }
-			});
-			vscode.window.showInformationMessage(response.data.message);
-		  } catch (error) {
-			console.log(error)
-			vscode.window.showErrorMessage('Pushing code failed: ' + error.message);
-		  }
-		} else {
-		  vscode.window.showErrorMessage('Please log in first.');
+		try {
+			if (token) {
+				// Read the content of db.json
+				const dbFilePath = path.join(__dirname, 'db.json');
+				const data = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
+		
+				// Extract labels from data
+				const snippetLabels = data.map(item => item.label);
+		
+				// Show a dropdown menu to select a snippet
+				const selectedSnippetLabel = await vscode.window.showQuickPick(snippetLabels, {
+					placeHolder: 'Select a snippet to push'
+				});
+				
+				if (selectedSnippetLabel) {
+					// Find the selected snippet object
+					const selectedSnippet = data.find(item => item.label === selectedSnippetLabel);
+
+					if (selectedSnippet) {
+						console.log("Selected snippet:", selectedSnippet);
+
+						const node = {
+							"title": `${selectedSnippet.label}`,
+							"description": `${selectedSnippet.description}`,
+							"tags": `${selectedSnippet.tags}`,
+							"codeSnipet": `${selectedSnippet.code}`
+						}
+
+						const response = await axios.post('https://ezzerreur-hackbyte.onrender.com/codes/postCode',node, {
+							headers: { 'Authorization': `${token}` }
+						});
+						vscode.window.showInformationMessage(response.data.message);
+					} else {
+						vscode.window.showErrorMessage('Snippet not found!');
+					}
+				}
+			} else {
+				vscode.window.showErrorMessage('Please log in first.');
+			}
+		} catch (error) {
+			vscode.window.showErrorMessage('Error: ' + error.message);
 		}
 	  });
 
