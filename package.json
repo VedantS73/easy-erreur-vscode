@@ -33,6 +33,11 @@
         "command": "Easy-Erreur.pushSnippet",
         "title": "Push Snippet to Ezz Erreur",
         "category": "easy-erreur"
+      },
+      {
+        "command": "Easy-Erreur.cleanCode",
+        "title": "Clean Code",
+        "category": "easy-erreur"
       }
     ],
     "menus": {
@@ -79,6 +84,7 @@
   "dependencies": {
     "axios": "^1.6.8",
     "fs": "^0.0.1-security",
+    "openai": "^4.33.0",
     "path": "^0.12.7"
   }
 }
