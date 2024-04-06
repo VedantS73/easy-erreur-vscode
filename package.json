@@ -38,6 +38,11 @@
         "command": "Easy-Erreur.cleanCode",
         "title": "Clean Code",
         "category": "easy-erreur"
+      },
+      {
+        "command": "Easy-Erreur.optimiseCode",
+        "title": "Optimise Code",
+        "category": "easy-erreur"
       }
     ],
     "menus": {
