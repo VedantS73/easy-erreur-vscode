@@ -320,7 +320,7 @@ async function activate(context) {
             return;
         }
 		if (token) {
-			const response = await axios.post('http://localhost:3001/codes/cleanCode',node, {
+			const response = await axios.post('https://ezzerreur-hackbyte.onrender.com/codes/cleanCode',node, {
 				headers: { 'Authorization': `${token}` }
 			});
 
@@ -350,7 +350,7 @@ async function activate(context) {
             return;
         }
 		if (token) {
-			const response = await axios.post('http://localhost:3001/codes/optimiseCode',node, {
+			const response = await axios.post('https://ezzerreur-hackbyte.onrender.com/codes/optimiseCode',node, {
 				headers: { 'Authorization': `${token}` }
 			});
 
